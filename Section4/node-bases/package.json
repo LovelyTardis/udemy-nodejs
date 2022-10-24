@@ -1,0 +1,16 @@
+{
+  "name": "node-bases",
+  "version": "1.0.0",
+  "description": "A simple multiplication table with save a text file.",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "LovelyTardis",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0"
+  }
+}
