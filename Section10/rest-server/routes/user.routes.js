@@ -19,7 +19,7 @@ import {
 
 const userRoutes = Router();
 
-const checkers = {
+const middlewares = {
   updateUser: [
     check("id", "Is not a valid MongoDB id.").isMongoId(),
     check("id").custom(userExistsById),
@@ -46,9 +46,9 @@ const checkers = {
 };
 
 userRoutes.get("/", getAllUsers);
-userRoutes.put("/:id", checkers.updateUser, updateUser);
-userRoutes.post("/", checkers.createUser, createUser);
-userRoutes.delete("/:id", checkers.deleteUser, deleteUser);
+userRoutes.put("/:id", middlewares.updateUser, updateUser);
+userRoutes.post("/", middlewares.createUser, createUser);
+userRoutes.delete("/:id", middlewares.deleteUser, deleteUser);
 userRoutes.patch("/", patchUser);
 
 export default userRoutes;
