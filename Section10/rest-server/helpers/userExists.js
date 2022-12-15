@@ -1,7 +1,9 @@
 import User from "../models/user.js";
 
-const userExists = async (email = "") => {
+export const userExistsByEmail = async (email = "") => {
   return await User.findOne({ email });
 };
 
-export default userExists;
+export const userExistsById = async (id = "") => {
+  return await User.findById(id);
+};
