@@ -1,6 +1,6 @@
 import { response, request } from "express";
 import User from "../models/user.js";
-import passwordHash from "../helpers/passwordHash.js";
+import { passwordHash } from "../helpers/passwordHash.js";
 
 export const getUser = (req = request, res = response) => {
   const { q, name = "unknown", apikey } = req.query;
