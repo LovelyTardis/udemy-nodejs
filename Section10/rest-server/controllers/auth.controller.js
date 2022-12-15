@@ -1,6 +1,7 @@
 import { request, response } from "express";
-import bcryptjs from "bcryptjs";
 import userExists from "../helpers/userExists.js";
+import generateJwt from "../helpers/generateJwt.js";
+import { passwordVerify } from "../helpers/passwordHash.js";
 
 export const loginUser = async (req = request, res = response) => {
   const { email, password } = req.body;
@@ -15,7 +16,7 @@ export const loginUser = async (req = request, res = response) => {
       });
     } else {
       // Password validator
-      const valid = bcryptjs.compareSync(password, user.password);
+      const valid = passwordVerify(password, user.password);
       if (!valid)
         return res.status(400).json({
           message: "Wrong email or password",
@@ -28,8 +29,12 @@ export const loginUser = async (req = request, res = response) => {
         message: "User not active",
       });
 
+    // Generate JWT
+    const token = await generateJwt(user.id);
+
     res.json({
       message: "/login OK",
+      token,
       data: user,
     });
   } catch (error) {
