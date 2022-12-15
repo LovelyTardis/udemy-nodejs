@@ -3,6 +3,8 @@ import { check } from "express-validator";
 
 import validateFields from "../middlewares/validateFields.js";
 import validateJwt from "../middlewares/validateJwt.js";
+import { validateRoles } from "../middlewares/validateRoles.js";
+
 import {
   isValidRole,
   emailExists,
@@ -21,26 +23,30 @@ const userRoutes = Router();
 
 const middlewares = {
   updateUser: [
-    check("id", "Is not a valid MongoDB id.").isMongoId(),
+    check("id", "Bad request - not a valid MongoDB id").isMongoId(),
     check("id").custom(userExistsById),
-    check("email", "The email is not valid.").isEmail(),
+    check("email", "Bad request - email not valid").isEmail(),
     check("email").custom(emailExists),
     check("role").custom(isValidRole),
     validateFields,
   ],
   createUser: [
-    check("name", "The name is required.").not().isEmpty(),
-    check("password", "The password must have 6 characters.").isLength({
+    check("name", "Bad request - name is required").not().isEmpty(),
+    check(
+      "password",
+      "Bad request - password must have 6+ characters"
+    ).isLength({
       min: 6,
     }),
-    check("email", "The email is not valid.").isEmail(),
+    check("email", "Bad request - not an email").isEmail(),
     check("email").custom(emailExists),
     check("role").custom(isValidRole),
     validateFields,
   ],
   deleteUser: [
     validateJwt,
-    check("id", "Is not a valid MongoDB id.").isMongoId(),
+    validateRoles,
+    check("id", "Bad request - not a valid MongoDB id").isMongoId(),
     check("id").custom(userExistsById),
     validateFields,
   ],
