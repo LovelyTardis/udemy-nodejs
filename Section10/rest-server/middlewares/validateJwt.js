@@ -8,7 +8,7 @@ const validateJwt = async (req = request, res = response, next) => {
 
   if (!token)
     return res.status(400).json({
-      message: "Bad request",
+      message: "Bad request - no token",
     });
 
   try {
@@ -18,12 +18,12 @@ const validateJwt = async (req = request, res = response, next) => {
 
     if (!user)
       return res.status(400).json({
-        message: "User not in the database",
+        message: "Bad request - user not in the database",
       });
 
     if (!user.state)
       return res.status(401).json({
-        message: "Not authorized",
+        message: "Forbidden - user not activated",
       });
 
     req.user = user;
@@ -33,7 +33,7 @@ const validateJwt = async (req = request, res = response, next) => {
     console.log(error);
 
     return res.status(401).json({
-      message: "Not authorized",
+      message: "Forbidden - error while trying to token verify",
     });
   }
 };
