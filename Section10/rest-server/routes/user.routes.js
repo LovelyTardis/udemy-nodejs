@@ -3,7 +3,7 @@ import { check } from "express-validator";
 
 import validateFields from "../middlewares/validateFields.js";
 import validateJwt from "../middlewares/validateJwt.js";
-import { validateRoles } from "../middlewares/validateRoles.js";
+import { validateRole } from "../middlewares/validateRoles.js";
 
 import {
   isValidRole,
@@ -45,7 +45,7 @@ const middlewares = {
   ],
   deleteUser: [
     validateJwt,
-    validateRoles,
+    validateRole("ADMIN_ROLE"),
     check("id", "Bad request - not a valid MongoDB id").isMongoId(),
     check("id").custom(userExistsById),
     validateFields,
