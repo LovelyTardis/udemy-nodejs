@@ -2,6 +2,7 @@ import { Router } from "express";
 import { check } from "express-validator";
 
 import validateFields from "../middlewares/validateFields.js";
+import validateJwt from "../middlewares/validateJwt.js";
 import {
   isValidRole,
   emailExists,
@@ -9,7 +10,6 @@ import {
 } from "../helpers/dbValidations.js";
 
 import {
-  getUser,
   getAllUsers,
   createUser,
   updateUser,
@@ -39,6 +39,7 @@ const middlewares = {
     validateFields,
   ],
   deleteUser: [
+    validateJwt,
     check("id", "Is not a valid MongoDB id.").isMongoId(),
     check("id").custom(userExistsById),
     validateFields,
