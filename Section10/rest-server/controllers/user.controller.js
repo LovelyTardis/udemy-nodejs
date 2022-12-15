@@ -69,7 +69,8 @@ export const updateUser = async (req = request, res = response) => {
 };
 
 export const deleteUser = async (req = request, res = response) => {
-  const { uid } = req;
+  const { user: authUser } = req;
+
   const { id } = req.params;
   const query = { state: false };
 
@@ -77,7 +78,7 @@ export const deleteUser = async (req = request, res = response) => {
 
   res.json({
     message: `User with id '${id}' deleted`,
-    data: uid,
+    authUser,
   });
 };
 
