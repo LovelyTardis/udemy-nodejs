@@ -1,5 +1,5 @@
 import { request, response } from "express";
-import userExists from "../helpers/userExists.js";
+import { userExistsByEmail } from "../helpers/userExists.js";
 import generateJwt from "../helpers/generateJwt.js";
 import { passwordVerify } from "../helpers/passwordHash.js";
 
@@ -7,7 +7,7 @@ export const loginUser = async (req = request, res = response) => {
   const { email, password } = req.body;
 
   try {
-    const user = await userExists(email);
+    const user = await userExistsByEmail(email);
 
     // User exists
     if (!user) {
