@@ -1,7 +1,9 @@
 import { request, response } from "express";
 import jwt from "jsonwebtoken";
 
-const validateJwt = (req = request, res = response, next) => {
+import { userExistsById } from "../helpers/userExists.js";
+
+const validateJwt = async (req = request, res = response, next) => {
   const token = req.header("x-token");
 
   if (!token)
@@ -12,7 +14,19 @@ const validateJwt = (req = request, res = response, next) => {
   try {
     const { uid } = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
 
-    req.uid = uid;
+    const user = await userExistsById(uid);
+
+    if (!user)
+      return res.status(400).json({
+        message: "User not in the database",
+      });
+
+    if (!user.state)
+      return res.status(401).json({
+        message: "Not authorized",
+      });
+
+    req.user = user;
 
     next();
   } catch (error) {
