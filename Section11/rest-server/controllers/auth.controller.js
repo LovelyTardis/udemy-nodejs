@@ -75,7 +75,8 @@ export const googleSignIn = async (req = request, res = response) => {
 
     if (!user.state)
       return res.status(401).json({
-        message: "Not authorized - user is deleted",
+        message:
+          "Not authorized - user not active, contact with an administrator",
       });
 
     const token = await generateJwt(user.id);
