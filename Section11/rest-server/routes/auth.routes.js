@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { check } from "express-validator";
 import { loginUser, googleSignIn } from "../controllers/auth.controller.js";
-import validateFields from "../middlewares/validateFields.js";
+import { validateFields, validateGoogleToken } from "../middlewares/index.js";
 
 const authRoutes = Router();
 
@@ -14,6 +14,7 @@ const middlewares = {
   ],
   google: [
     check("id_token", "Token is required.").not().isEmpty(),
+    validateGoogleToken,
     validateFields,
   ],
 };
