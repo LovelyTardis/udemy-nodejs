@@ -1,19 +1,14 @@
 import express from "express";
 import cors from "cors";
-import userRoutes from "../routes/user.routes.js";
-import authRoutes from "../routes/auth.routes.js";
-import { dbConnection } from "../database/config.js";
+import { Server as socketServer } from "socket.io";
+import { createServer } from "http";
 
 export default class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 8080;
-
-    this.usersRoutePath = "/api/users";
-    this.authPath = "/api/auth";
-
-    // Connect to mongodb
-    this.mongoConnect();
+    this.server = createServer(this.app);
+    this.io = new socketServer(this.server);
 
     // Middlewares
     this.middlewares();
@@ -22,14 +17,10 @@ export default class Server {
     this.routes();
   }
 
-  setup() {
-    this.app.listen(this.port, () => {
+  init() {
+    this.server.listen(this.port, () => {
       console.log(`App started. Listening on port ${this.port}`);
     });
-  }
-
-  mongoConnect() {
-    dbConnection();
   }
 
   middlewares() {
@@ -41,16 +32,9 @@ export default class Server {
       })
     );
 
-    // Read and parse body
-    this.app.use(express.json());
-
     // Public directory
     this.app.use(express.static("public"));
   }
 
-  routes() {
-    // User routes
-    this.app.use(this.authPath, authRoutes);
-    this.app.use(this.usersRoutePath, userRoutes);
-  }
+  routes() {}
 }
