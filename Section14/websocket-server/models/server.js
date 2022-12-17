@@ -15,6 +15,9 @@ export default class Server {
 
     // Routes
     this.routes();
+
+    // Socket event setup
+    this.sockets();
   }
 
   init() {
@@ -34,6 +37,16 @@ export default class Server {
 
     // Public directory
     this.app.use(express.static("public"));
+  }
+
+  sockets() {
+    this.io.on("connection", (client) => {
+      console.log("Client " + client.id + " connected");
+
+      client.on("disconnect", () => {
+        console.log("Client " + client.id + " disconnected");
+      });
+    });
   }
 
   routes() {}
