@@ -84,6 +84,7 @@ export const googleSignIn = async (req = request, res = response) => {
     res.json({
       message: "Signed in successfully",
       token,
+      user,
     });
   } catch (error) {
     console.log(error);
