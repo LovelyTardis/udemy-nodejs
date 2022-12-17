@@ -1,7 +1,7 @@
 import { request, response } from "express";
 import jwt from "jsonwebtoken";
 
-import { userExistsById } from "../helpers/userExists.js";
+import { findUserById } from "../helpers/user/index.js";
 
 const validateJwt = async (req = request, res = response, next) => {
   const token = req.header("x-token");
@@ -14,7 +14,7 @@ const validateJwt = async (req = request, res = response, next) => {
   try {
     const { uid } = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
 
-    const user = await userExistsById(uid);
+    const user = await findUserById(uid);
 
     if (!user)
       return res.status(400).json({
