@@ -1,6 +1,6 @@
 import { request, response } from "express";
-import { userExistsByEmail } from "../helpers/userExists.js";
 import generateJwt from "../helpers/generateJwt.js";
+import { userExistsByEmail } from "../helpers/userExists.js";
 import { passwordVerify } from "../helpers/passwordHash.js";
 
 export const loginUser = async (req = request, res = response) => {
@@ -45,11 +45,16 @@ export const loginUser = async (req = request, res = response) => {
   }
 };
 
-export const googleSignIn = (req = request, res = response) => {
-  const { id_token } = req.body;
+export const googleSignIn = async (req = request, res = response) => {
+  const user = req.authUser;
+
+  if (!user)
+    return res.status(400).json({
+      message: "Bad request - no authenticated user",
+    });
 
   res.json({
     message: "Signed in successfully",
-    id_token,
+    user,
   });
 };
