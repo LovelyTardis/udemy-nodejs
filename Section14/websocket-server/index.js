@@ -5,4 +5,4 @@ dotenv.config();
 
 const server = new Server();
 
-server.setup();
+server.init();
