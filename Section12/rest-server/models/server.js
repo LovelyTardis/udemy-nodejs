@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
-import userRoutes from "../routes/user.routes.js";
-import authRoutes from "../routes/auth.routes.js";
+import { authRoutes, categoriesRoutes, userRoutes } from "../routes/index.js";
 import { dbConnection } from "../database/config.js";
 
 export default class Server {
@@ -9,8 +8,11 @@ export default class Server {
     this.app = express();
     this.port = process.env.PORT || 8080;
 
-    this.usersRoutePath = "/api/users";
-    this.authPath = "/api/auth";
+    this.routesPath = {
+      auth: "/api/auth",
+      categories: "/api/categories",
+      users: "/api/users",
+    };
 
     // Connect to mongodb
     this.mongoConnect();
@@ -50,7 +52,8 @@ export default class Server {
 
   routes() {
     // User routes
-    this.app.use(this.authPath, authRoutes);
-    this.app.use(this.usersRoutePath, userRoutes);
+    this.app.use(this.routesPath.auth, authRoutes);
+    this.app.use(this.routesPath.categories, categoriesRoutes);
+    this.app.use(this.routesPath.users, userRoutes);
   }
 }
