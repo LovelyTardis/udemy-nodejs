@@ -4,40 +4,54 @@ import {
   findAllCategories,
   findCategoryById,
   findCategoryAndUpdate,
+  deleteCategory as deleteCategoryDB,
 } from "../helpers/category/index.js";
 
 export const getCategories = async (req = request, res = response) => {
   const { limit = 5, from = 0 } = req.query;
 
-  const [totalCategories, categories] = await findAllCategories(limit, from);
-
-  res.json({
-    message: "Categories found",
-    totalCategories,
-    entries: categories.length,
-    categories,
-  });
+  try {
+    const [totalCategories, categories] = await findAllCategories(limit, from);
+    res.json({
+      message: "Categories found",
+      totalCategories,
+      entries: categories.length,
+      categories,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: `ERROR: ${error}`,
+      message: "Internal server error while getting all categories",
+    });
+  }
 };
 
 export const getCategory = async (req = request, res = response) => {
   const { id } = req.params;
 
-  const category = await findCategoryById(id);
+  try {
+    const category = await findCategoryById(id);
 
-  if (!category)
-    return res.status(400).json({
-      message: "Bad request - category does not exist",
+    if (!category)
+      return res.status(400).json({
+        message: "Bad request - category does not exist",
+      });
+
+    if (!category.state)
+      return res.status(400).json({
+        message: "Bad request - category not active",
+      });
+
+    res.json({
+      message: "Category found",
+      category,
     });
-
-  if (!category.state)
-    return res.status(400).json({
-      message: "Bad request - category not active",
+  } catch (error) {
+    return res.status(500).json({
+      error: `ERROR: ${error}`,
+      message: "Internal server error while getting a category",
     });
-
-  res.json({
-    message: "Category found",
-    category,
-  });
+  }
 };
 
 export const createCategory = async (req = request, res = response) => {
@@ -55,7 +69,8 @@ export const createCategory = async (req = request, res = response) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message: `ERROR: ${error}`,
+      error: `ERROR: ${error}`,
+      message: "Internal server error while creating a category",
     });
   }
 };
@@ -64,17 +79,32 @@ export const updateCategory = async (req = request, res = response) => {
   const { id } = req.params;
   const name = req.body.name.toUpperCase();
 
-  const updatedCategory = await findCategoryAndUpdate(id, { name });
-
-  res.json({
-    message: `Category name updated to ${updatedCategory.name}`,
-    updatedCategory,
-  });
+  try {
+    const updatedCategory = await findCategoryAndUpdate(id, { name });
+    res.json({
+      message: `Category name updated to ${updatedCategory.name}`,
+      updatedCategory,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: `ERROR: ${error}`,
+      message: "Internal server error while updating a category",
+    });
+  }
 };
 
-export const deleteCategory = (req = request, res = response) => {
+export const deleteCategory = async (req = request, res = response) => {
   const { id } = req.params;
-  res.json({
-    message: "delete category",
-  });
+
+  try {
+    await deleteCategoryDB(id);
+    res.json({
+      message: `Category with id ${id} deleted`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: `ERROR: ${error}`,
+      message: "Internal server error while deleting a category",
+    });
+  }
 };
