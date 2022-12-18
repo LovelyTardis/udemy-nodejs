@@ -8,6 +8,7 @@ import {
   updateCategory,
   deleteCategory,
 } from "../controllers/categories.controller.js";
+import { validateCategoryIfNotExists } from "../middlewares/validateCategory.js";
 
 const categoriesRoutes = Router();
 
@@ -17,6 +18,7 @@ const middlewares = {
   create: [
     validateJwt,
     check("name", "Name is required.").not().isEmpty(),
+    validateCategoryIfNotExists,
     validateFields,
   ],
   update: [],
