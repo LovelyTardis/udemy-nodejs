@@ -1,5 +1,8 @@
 import { response, request } from "express";
-import { findAllCategories } from "../helpers/category/findCategory.js";
+import {
+  findAllCategories,
+  findCategoryById,
+} from "../helpers/category/findCategory.js";
 import { createCategory as createCategoryDB } from "../helpers/category/index.js";
 
 export const getCategories = async (req = request, res = response) => {
@@ -15,10 +18,24 @@ export const getCategories = async (req = request, res = response) => {
   });
 };
 
-export const getCategory = (req = request, res = response) => {
+export const getCategory = async (req = request, res = response) => {
   const { id } = req.params;
+
+  const category = await findCategoryById(id);
+
+  if (!category)
+    return res.status(400).json({
+      message: "Bad request - category does not exist",
+    });
+
+  if (!category.state)
+    return res.status(400).json({
+      message: "Bad request - category not active",
+    });
+
   res.json({
-    message: "get category",
+    message: "Category found",
+    category,
   });
 };
 
