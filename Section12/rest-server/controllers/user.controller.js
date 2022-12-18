@@ -1,6 +1,7 @@
 import { response, request } from "express";
 import { User } from "../models/index.js";
 import { passwordHash } from "../helpers/passwordHash.js";
+import { findAllUsers } from "../helpers/user/findUser.js";
 
 export const getUser = (req = request, res = response) => {
   const { q, name = "unknown", apikey } = req.query;
@@ -16,12 +17,8 @@ export const getUser = (req = request, res = response) => {
 
 export const getAllUsers = async (req = request, res = response) => {
   const { limit = 5, from = 0 } = req.query;
-  const query = { state: true };
 
-  const [totalUsers, users] = await Promise.all([
-    User.countDocuments(),
-    User.find(query).skip(from).limit(limit),
-  ]);
+  const [totalUsers, users] = await findAllUsers(limit, from);
 
   res.json({
     message: "Users found",
