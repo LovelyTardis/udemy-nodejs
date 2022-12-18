@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { validateFields } from "../middlewares/index.js";
+import { validateFields, validateJwt } from "../middlewares/index.js";
 import {
   getCategories,
   getCategory,
@@ -14,7 +14,11 @@ const categoriesRoutes = Router();
 const middlewares = {
   getCategories: [],
   getCategory: [],
-  create: [],
+  create: [
+    validateJwt,
+    check("name", "Name is required.").not().isEmpty(),
+    validateFields,
+  ],
   update: [],
   delete: [],
 };
