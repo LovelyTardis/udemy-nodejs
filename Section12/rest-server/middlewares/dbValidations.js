@@ -20,3 +20,9 @@ export const categoryExistsById = async (id = "") => {
   if (!categoryExists)
     throw new Error(`Category with id '${id}' does not exist.`);
 };
+
+export const isDeletedCategory = async (id = "") => {
+  const category = await Category.findById(id);
+  if (!category.state)
+    throw new Error(`Category with id '${id}' is already deleted.`);
+};
