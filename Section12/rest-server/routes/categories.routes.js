@@ -4,8 +4,10 @@ import {
   categoryExistsById,
   validateFields,
   validateJwt,
+  validateRole,
   validateCategoryIfNotExists,
   validateCategoryUpdateBody,
+  isDeletedCategory,
 } from "../middlewares/index.js";
 
 import {
@@ -21,6 +23,7 @@ const categoriesRoutes = Router();
 const middlewares = {
   getCategory: [
     check("id", "Bad request - id is required").not().isEmpty(),
+    check("id", "Bad request - not a valid MongoDB id").isMongoId(),
     check("id").custom(categoryExistsById),
     validateFields,
   ],
@@ -33,13 +36,21 @@ const middlewares = {
   update: [
     validateJwt,
     check("id", "Bad request - id is required").not().isEmpty(),
-    check("id", "Bad request - not a valid MongoDB id"),
+    check("id", "Bad request - not a valid MongoDB id").isMongoId(),
     check("id").custom(categoryExistsById),
     validateCategoryUpdateBody,
     validateCategoryIfNotExists,
     validateFields,
   ],
-  delete: [],
+  delete: [
+    validateJwt,
+    check("id", "Bad request - id is required").not().isEmpty(),
+    check("id", "Bad request - not a valid MongoDB id").isMongoId(),
+    check("id").custom(categoryExistsById),
+    check("id").custom(isDeletedCategory),
+    validateRole("ADMIN_ROLE"),
+    validateFields,
+  ],
 };
 
 // PUBLIC
