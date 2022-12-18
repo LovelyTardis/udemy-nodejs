@@ -5,6 +5,7 @@ import {
   validateFields,
   validateJwt,
   validateCategoryIfNotExists,
+  validateCategoryUpdateBody,
 } from "../middlewares/index.js";
 
 import {
@@ -19,17 +20,25 @@ const categoriesRoutes = Router();
 
 const middlewares = {
   getCategory: [
-    check("id", "Id is required.").not().isEmpty(),
+    check("id", "Bad request - id is required").not().isEmpty(),
     check("id").custom(categoryExistsById),
     validateFields,
   ],
   create: [
     validateJwt,
-    check("name", "Name is required.").not().isEmpty(),
+    check("name", "Bad request - name is required").not().isEmpty(),
     validateCategoryIfNotExists,
     validateFields,
   ],
-  update: [],
+  update: [
+    validateJwt,
+    check("id", "Bad request - id is required").not().isEmpty(),
+    check("id", "Bad request - not a valid MongoDB id"),
+    check("id").custom(categoryExistsById),
+    validateCategoryUpdateBody,
+    validateCategoryIfNotExists,
+    validateFields,
+  ],
   delete: [],
 };
 
