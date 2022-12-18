@@ -5,8 +5,12 @@ export const findAllCategories = async (limit, from) => {
 
   return await Promise.all([
     Category.countDocuments(),
-    Category.find(query).skip(from).limit(limit),
+    Category.find(query).populate("user", "name").skip(from).limit(limit),
   ]);
+};
+
+export const findCategoryById = async (id) => {
+  return await Category.findById(id).populate("user", "name");
 };
 
 export const findCategoryByName = async (name) => {
