@@ -20,30 +20,21 @@ export const getCategory = (req = request, res = response) => {
 export const createCategory = async (req = request, res = response) => {
   const name = req.body.name.toUpperCase();
 
-  const category = await findCategoryByName(name);
-
-  if (category) {
-    return res.status(400).json({
-      message: `Category ${category.name} already exists`,
-    });
-  }
-
   const dataToSave = {
     name,
     user: req.user._id,
   };
 
   try {
-    await createCategoryDB(dataToSave);
+    const category = await createCategoryDB(dataToSave);
+    res.status(201).json({
+      message: `New ${category.name} category created`,
+    });
   } catch (error) {
     return res.status(500).json({
       message: `ERROR: ${error}`,
     });
   }
-
-  res.status(201).json({
-    message: `New ${category.name} category created`,
-  });
 };
 
 export const updateCategory = (req = request, res = response) => {
