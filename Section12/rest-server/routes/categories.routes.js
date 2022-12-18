@@ -13,7 +13,6 @@ import { validateCategoryIfNotExists } from "../middlewares/validateCategory.js"
 const categoriesRoutes = Router();
 
 const middlewares = {
-  getCategories: [],
   getCategory: [],
   create: [
     validateJwt,
@@ -26,7 +25,7 @@ const middlewares = {
 };
 
 // PUBLIC
-categoriesRoutes.get("/", middlewares.getCategories, getCategories);
+categoriesRoutes.get("/", getCategories);
 
 // PUBLIC
 categoriesRoutes.get("/:id", middlewares.getCategory, getCategory);
