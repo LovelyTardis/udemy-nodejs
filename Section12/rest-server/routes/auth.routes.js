@@ -7,13 +7,13 @@ const authRoutes = Router();
 
 const middlewares = {
   login: [
-    check("email", "Email is required.").not().isEmpty(),
-    check("email", "Email not valid.").isEmail(),
-    check("password", "Password is required.").not().isEmpty(),
+    check("email", "Bad request - email is required").not().isEmpty(),
+    check("email", "Bad request - email not valid").isEmail(),
+    check("password", "Bad request - password is required").not().isEmpty(),
     validateFields,
   ],
   google: [
-    check("id_token", "Token is required.").not().isEmpty(),
+    check("id_token", "Bad request - token is required").not().isEmpty(),
     validateGoogleToken,
     validateFields,
   ],
