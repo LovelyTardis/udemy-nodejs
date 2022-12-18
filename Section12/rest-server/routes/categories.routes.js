@@ -1,6 +1,12 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { validateFields, validateJwt } from "../middlewares/index.js";
+import {
+  categoryExistsById,
+  validateFields,
+  validateJwt,
+  validateCategoryIfNotExists,
+} from "../middlewares/index.js";
+
 import {
   getCategories,
   getCategory,
@@ -8,12 +14,15 @@ import {
   updateCategory,
   deleteCategory,
 } from "../controllers/categories.controller.js";
-import { validateCategoryIfNotExists } from "../middlewares/validateCategory.js";
 
 const categoriesRoutes = Router();
 
 const middlewares = {
-  getCategory: [],
+  getCategory: [
+    check("id", "Id is required.").not().isEmpty(),
+    check("id").custom(categoryExistsById),
+    validateFields,
+  ],
   create: [
     validateJwt,
     check("name", "Name is required.").not().isEmpty(),
