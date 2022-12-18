@@ -1,12 +1,17 @@
 import { response, request } from "express";
-import {
-  findCategoryByName,
-  createCategory as createCategoryDB,
-} from "../helpers/category/index.js";
+import { findAllCategories } from "../helpers/category/findCategory.js";
+import { createCategory as createCategoryDB } from "../helpers/category/index.js";
 
-export const getCategories = (req = request, res = response) => {
+export const getCategories = async (req = request, res = response) => {
+  const { limit = 5, from = 0 } = req.query;
+
+  const [totalCategories, categories] = await findAllCategories(limit, from);
+
   res.json({
-    message: "get all categories",
+    message: "Categories found",
+    totalCategories,
+    entries: categories.length,
+    categories,
   });
 };
 
