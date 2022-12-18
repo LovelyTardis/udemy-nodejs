@@ -5,13 +5,10 @@ import {
   validateFields,
   validateJwt,
   validateRole,
-} from "../middlewares/index.js";
-
-import {
   isValidRole,
   emailExists,
   userExistsById,
-} from "../helpers/dbValidations.js";
+} from "../middlewares/index.js";
 
 import {
   getAllUsers,
