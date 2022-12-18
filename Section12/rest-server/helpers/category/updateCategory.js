@@ -6,3 +6,7 @@ export const findCategoryAndUpdate = async (id, objectToSave) => {
     "name"
   );
 };
+
+export const deleteCategory = async (id) => {
+  await Category.findByIdAndUpdate(id, { state: false });
+};
