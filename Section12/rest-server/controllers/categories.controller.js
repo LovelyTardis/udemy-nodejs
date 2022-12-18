@@ -1,9 +1,10 @@
 import { response, request } from "express";
 import {
+  createCategory as createCategoryDB,
   findAllCategories,
   findCategoryById,
-} from "../helpers/category/findCategory.js";
-import { createCategory as createCategoryDB } from "../helpers/category/index.js";
+  findCategoryAndUpdate,
+} from "../helpers/category/index.js";
 
 export const getCategories = async (req = request, res = response) => {
   const { limit = 5, from = 0 } = req.query;
@@ -59,10 +60,15 @@ export const createCategory = async (req = request, res = response) => {
   }
 };
 
-export const updateCategory = (req = request, res = response) => {
+export const updateCategory = async (req = request, res = response) => {
   const { id } = req.params;
+  const name = req.body.name.toUpperCase();
+
+  const updatedCategory = await findCategoryAndUpdate(id, { name });
+
   res.json({
-    message: "update category",
+    message: `Category name updated to ${updatedCategory.name}`,
+    updatedCategory,
   });
 };
 
