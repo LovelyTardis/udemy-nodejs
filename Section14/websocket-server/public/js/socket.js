@@ -17,11 +17,17 @@ socket.on("disconnect", () => {
   console.log("DISCONNECTED");
 });
 
+socket.on("newMessage", (payload) => {
+  console.log(payload);
+});
+
 btnSend.addEventListener("click", () => {
   const payload = {
     id: socket.id,
     message: txtMessage.value,
     date: new Date().getTime(),
   };
-  socket.emit("sendMessage", payload);
+  socket.emit("sendMessage", payload, () => {
+    console.log("I am a callback");
+  });
 });
