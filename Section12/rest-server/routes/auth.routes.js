@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { loginUser, googleSignIn } from "../controllers/auth.controller.js";
+
 import { validateFields, validateGoogleToken } from "../middlewares/index.js";
+import { loginUser, googleSignIn } from "../controllers/index.js";
 
 const authRoutes = Router();
 

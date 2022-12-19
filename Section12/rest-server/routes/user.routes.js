@@ -16,7 +16,7 @@ import {
   updateUser,
   patchUser,
   deleteUser,
-} from "../controllers/user.controller.js";
+} from "../controllers/index.js";
 
 const userRoutes = Router();
 

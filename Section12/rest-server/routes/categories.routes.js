@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator";
+
 import {
   categoryExistsById,
   validateFields,
@@ -9,14 +10,13 @@ import {
   validateCategoryUpdateBody,
   isDeletedCategory,
 } from "../middlewares/index.js";
-
 import {
   getCategories,
   getCategory,
   createCategory,
   updateCategory,
   deleteCategory,
-} from "../controllers/categories.controller.js";
+} from "../controllers/index.js";
 
 const categoriesRoutes = Router();
 
