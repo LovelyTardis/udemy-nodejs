@@ -1,6 +1,11 @@
 import express from "express";
 import cors from "cors";
-import { authRoutes, categoriesRoutes, userRoutes } from "../routes/index.js";
+import {
+  authRoutes,
+  categoriesRoutes,
+  productsRoutes,
+  userRoutes,
+} from "../routes/index.js";
 import { dbConnection } from "../database/config.js";
 
 export default class Server {
@@ -12,6 +17,7 @@ export default class Server {
       auth: "/api/auth",
       categories: "/api/categories",
       users: "/api/users",
+      products: "/api/products",
     };
 
     // Connect to mongodb
@@ -55,5 +61,6 @@ export default class Server {
     this.app.use(this.routesPath.auth, authRoutes);
     this.app.use(this.routesPath.categories, categoriesRoutes);
     this.app.use(this.routesPath.users, userRoutes);
+    this.app.use(this.routesPath.products, productsRoutes);
   }
 }
