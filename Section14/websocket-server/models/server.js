@@ -3,6 +3,8 @@ import cors from "cors";
 import { Server as socketServer } from "socket.io";
 import { createServer } from "http";
 
+import { socketController } from "../sockets/controller.js";
+
 export default class Server {
   constructor() {
     this.app = express();
@@ -40,17 +42,7 @@ export default class Server {
   }
 
   sockets() {
-    this.io.on("connection", (client) => {
-      console.log("Client " + client.id + " connected");
-
-      client.on("disconnect", () => {
-        console.log("Client " + client.id + " disconnected");
-      });
-
-      client.on("sendMessage", (payload) => {
-        console.log(payload);
-      });
-    });
+    this.io.on("connection", socketController);
   }
 
   routes() {}
