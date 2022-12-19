@@ -46,6 +46,10 @@ export default class Server {
       client.on("disconnect", () => {
         console.log("Client " + client.id + " disconnected");
       });
+
+      client.on("sendMessage", (payload) => {
+        console.log(payload);
+      });
     });
   }
 
