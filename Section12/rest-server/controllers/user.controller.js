@@ -1,86 +1,91 @@
 import { response, request } from "express";
 import { User } from "../models/index.js";
 import { passwordHash } from "../helpers/passwordHash.js";
-import { findAllUsers } from "../helpers/user/findUser.js";
 
-export const getUser = (req = request, res = response) => {
-  const { q, name = "unknown", apikey } = req.query;
-  res.json({
-    message: "get /api/user",
-    data: {
-      q,
-      name,
-      apikey,
-    },
-  });
-};
+import { FindAll, Create, Update, Delete } from "../database/helpers/index.js";
 
 export const getAllUsers = async (req = request, res = response) => {
-  const { limit = 5, from = 0 } = req.query;
+  const { limit, from } = req.query;
 
-  const [totalUsers, users] = await findAllUsers(limit, from);
+  try {
+    const [totalUsers, users] = await FindAll(User, { limit, from });
 
-  res.json({
-    message: "Users found",
-    totalUsers,
-    entries: users.length,
-    users,
-  });
+    res.json({
+      message: "Users found",
+      totalUsers,
+      entries: users.length,
+      users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: `ERROR: ${error}`,
+      message: "Internal server error while getting all users",
+    });
+  }
 };
 
 export const createUser = async (req = request, res = response) => {
   const { name, email, password, role } = req.body;
-  const user = new User({
+
+  const dataToSave = {
     name,
     email,
     password,
     role,
-  });
+  };
+  dataToSave.password = passwordHash(password);
 
-  user.password = passwordHash(password);
+  try {
+    const user = await Create(User, dataToSave);
 
-  await user.save();
-
-  res.status(201).json({
-    message: "User created",
-    user,
-  });
+    res.status(201).json({
+      message: "User created",
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: `ERROR: ${error}`,
+      message: "Internal server error while creating a user",
+    });
+  }
 };
 
 export const updateUser = async (req = request, res = response) => {
   const { id } = req.params;
-  const { _id, password, google, ...rest } = req.body;
-
-  // TODO: validate id in the database
+  const { _id, password, google, ...updatedData } = req.body;
 
   if (password) {
-    rest.password = passwordHash(password);
+    updatedData.password = passwordHash(password);
   }
 
-  const user = await User.findByIdAndUpdate(id, rest);
+  try {
+    const user = await Update(User, { id, updatedData });
 
-  res.json({
-    message: `User '${id}' updated`,
-    user,
-  });
+    res.json({
+      message: `User '${id}' updated`,
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: `ERROR: ${error}`,
+      message: "Internal server error while updating a user",
+    });
+  }
 };
 
 export const deleteUser = async (req = request, res = response) => {
-  const { user: authUser } = req;
-
   const { id } = req.params;
-  const query = { state: false };
 
-  await User.findByIdAndUpdate(id, query);
+  try {
+    await Delete(User, id);
 
-  res.json({
-    message: `User with id '${id}' deleted`,
-    authUser,
-  });
-};
-
-export const patchUser = (req = request, res = response) => {
-  res.json({
-    message: "patch /api/user",
-  });
+    res.json({
+      message: `User ${id} deleted`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: `ERROR: ${error}`,
+      message: "Internal server error while deleting a user",
+    });
+  }
 };
