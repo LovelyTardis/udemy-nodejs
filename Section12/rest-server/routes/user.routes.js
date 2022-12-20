@@ -14,7 +14,6 @@ import {
   getAllUsers,
   createUser,
   updateUser,
-  patchUser,
   deleteUser,
 } from "../controllers/index.js";
 
@@ -55,6 +54,5 @@ userRoutes.get("/", getAllUsers);
 userRoutes.put("/:id", middlewares.updateUser, updateUser);
 userRoutes.post("/", middlewares.createUser, createUser);
 userRoutes.delete("/:id", middlewares.deleteUser, deleteUser);
-userRoutes.patch("/", patchUser);
 
 export default userRoutes;
