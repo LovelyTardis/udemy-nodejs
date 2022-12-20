@@ -27,12 +27,7 @@ const middlewares = {
     check("id").custom(categoryExistsById),
     validateFields,
   ],
-  create: [
-    validateJwt,
-    check("name", "Bad request - name is required").not().isEmpty(),
-    validateCategoryIfNotExists,
-    validateFields,
-  ],
+  create: [validateJwt, validateCategoryIfNotExists, validateFields],
   update: [
     validateJwt,
     check("id", "Bad request - id is required").not().isEmpty(),
