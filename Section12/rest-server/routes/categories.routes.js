@@ -2,13 +2,12 @@ import { Router } from "express";
 import { check } from "express-validator";
 
 import {
-  categoryExistsById,
   validateFields,
   validateJwt,
   validateRole,
   validateCategoryIfNotExists,
   validateCategoryUpdateBody,
-  isDeletedCategory,
+  existsInDatabase,
 } from "../middlewares/index.js";
 import {
   getCategories,
@@ -17,6 +16,7 @@ import {
   updateCategory,
   deleteCategory,
 } from "../controllers/index.js";
+import { Category } from "../models/index.js";
 
 const categoriesRoutes = Router();
 
@@ -24,7 +24,7 @@ const middlewares = {
   getCategory: [
     check("id", "Bad request - id is required").not().isEmpty(),
     check("id", "Bad request - not a valid MongoDB id").isMongoId(),
-    check("id").custom(categoryExistsById),
+    check("id").custom((id) => existsInDatabase(Category, id)),
     validateFields,
   ],
   create: [validateJwt, validateCategoryIfNotExists, validateFields],
@@ -32,7 +32,7 @@ const middlewares = {
     validateJwt,
     check("id", "Bad request - id is required").not().isEmpty(),
     check("id", "Bad request - not a valid MongoDB id").isMongoId(),
-    check("id").custom(categoryExistsById),
+    check("id").custom((id) => existsInDatabase(Category, id)),
     validateCategoryUpdateBody,
     validateCategoryIfNotExists,
     validateFields,
@@ -41,8 +41,7 @@ const middlewares = {
     validateJwt,
     check("id", "Bad request - id is required").not().isEmpty(),
     check("id", "Bad request - not a valid MongoDB id").isMongoId(),
-    check("id").custom(categoryExistsById),
-    check("id").custom(isDeletedCategory),
+    check("id").custom((id) => existsInDatabase(Category, id)),
     validateRole("ADMIN_ROLE"),
     validateFields,
   ],

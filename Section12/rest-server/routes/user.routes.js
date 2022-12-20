@@ -7,7 +7,7 @@ import {
   validateRole,
   isValidRole,
   emailExists,
-  userExistsById,
+  existsInDatabase,
 } from "../middlewares/index.js";
 
 import {
@@ -16,13 +16,14 @@ import {
   updateUser,
   deleteUser,
 } from "../controllers/index.js";
+import { User } from "../models/index.js";
 
 const userRoutes = Router();
 
 const middlewares = {
   updateUser: [
     check("id", "Bad request - not a valid MongoDB id").isMongoId(),
-    check("id").custom(userExistsById),
+    check("id").custom((id) => existsInDatabase(User, id)),
     check("email", "Bad request - email not valid").isEmail(),
     check("email").custom(emailExists),
     check("role").custom(isValidRole),
@@ -45,7 +46,7 @@ const middlewares = {
     validateJwt,
     validateRole("ADMIN_ROLE"),
     check("id", "Bad request - not a valid MongoDB id").isMongoId(),
-    check("id").custom(userExistsById),
+    check("id").custom((id) => existsInDatabase(User, id)),
     validateFields,
   ],
 };
