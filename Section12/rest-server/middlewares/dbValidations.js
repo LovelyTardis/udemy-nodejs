@@ -1,4 +1,5 @@
-import { Category, Role, User } from "../models/index.js";
+import { FindById } from "../database/helpers/findInDatabase.js";
+import { Category, Role, Product, User } from "../models/index.js";
 
 export const isValidRole = async (role = "") => {
   const roleExists = await Role.findOne({ role });
@@ -10,19 +11,9 @@ export const emailExists = async (email = "") => {
   if (emailExists) throw new Error(`Email '${email}' is already registered.`);
 };
 
-export const userExistsById = async (id = "") => {
-  const userExists = await User.findById(id);
-  if (!userExists) throw new Error(`User with id '${id}' does not exist.`);
-};
-
-export const categoryExistsById = async (id = "") => {
-  const categoryExists = await Category.findById(id);
-  if (!categoryExists)
-    throw new Error(`Category with id '${id}' does not exist.`);
-};
-
-export const isDeletedCategory = async (id = "") => {
-  const category = await Category.findById(id);
-  if (!category.state)
-    throw new Error(`Category with id '${id}' is already deleted.`);
+export const existsInDatabase = async (Model, id = "") => {
+  const exists = await FindById(Model, { id });
+  if (!exists) throw new Error(`${Model.name} does not exist in the database.`);
+  if (!exists.state)
+    throw new Error(`That element is not active in the database.`);
 };
