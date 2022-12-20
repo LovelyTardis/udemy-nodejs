@@ -1,17 +1,24 @@
 import { response, request } from "express";
+
+import { Category } from "../models/index.js";
 import {
-  createCategory as createCategoryDB,
-  findAllCategories,
-  findCategoryById,
-  findCategoryAndUpdate,
-  deleteCategory as deleteCategoryDB,
-} from "../helpers/category/index.js";
+  Create,
+  Delete,
+  FindAll,
+  FindById,
+  Update,
+} from "../database/helpers/index.js";
 
 export const getCategories = async (req = request, res = response) => {
-  const { limit = 5, from = 0 } = req.query;
+  const { limit, from } = req.query;
 
   try {
-    const [totalCategories, categories] = await findAllCategories(limit, from);
+    const [totalCategories, categories] = await FindAll(Category, {
+      limit,
+      from,
+      populate: ["user", "name"],
+    });
+
     res.json({
       message: "Categories found",
       totalCategories,
@@ -30,7 +37,7 @@ export const getCategory = async (req = request, res = response) => {
   const { id } = req.params;
 
   try {
-    const category = await findCategoryById(id);
+    const category = await FindById(Category, { id });
 
     if (!category)
       return res.status(400).json({
@@ -63,7 +70,8 @@ export const createCategory = async (req = request, res = response) => {
   };
 
   try {
-    const category = await createCategoryDB(dataToSave);
+    const category = await Create(Category, dataToSave);
+
     res.status(201).json({
       message: `New ${category.name} category created`,
     });
@@ -80,7 +88,12 @@ export const updateCategory = async (req = request, res = response) => {
   const name = req.body.name.toUpperCase();
 
   try {
-    const updatedCategory = await findCategoryAndUpdate(id, { name });
+    const updatedCategory = await Update(Category, {
+      id,
+      updatedData: { name },
+      populate: ["user", "name"],
+    });
+
     res.json({
       message: `Category name updated to ${updatedCategory.name}`,
       updatedCategory,
@@ -97,7 +110,8 @@ export const deleteCategory = async (req = request, res = response) => {
   const { id } = req.params;
 
   try {
-    await deleteCategoryDB(id);
+    await Delete(Category, id);
+
     res.json({
       message: `Category with id ${id} deleted`,
     });

@@ -1,36 +1,34 @@
 import { request, response } from "express";
 
 import generateJwt from "../helpers/generateJwt.js";
-import { findUserByEmail, createUser } from "../helpers/user/index.js";
 import { passwordHash, passwordVerify } from "../helpers/passwordHash.js";
+import { Create, FindOne } from "../database/helpers/index.js";
+import { User } from "../models/index.js";
 
 export const loginUser = async (req = request, res = response) => {
   const { email, password } = req.body;
 
   try {
-    const user = await findUserByEmail(email);
+    const user = await FindOne(User, { email });
 
-    // User exists
     if (!user) {
       return res.status(400).json({
         message: "Wrong email or password",
       });
     } else {
-      // Password validator
       const valid = passwordVerify(password, user.password);
+
       if (!valid)
         return res.status(400).json({
           message: "Wrong email or password",
         });
     }
 
-    // User active
     if (!user.state)
       return res.status(400).json({
         message: "User not active",
       });
 
-    // Generate JWT
     const token = await generateJwt(user.id);
 
     res.json({
@@ -39,7 +37,6 @@ export const loginUser = async (req = request, res = response) => {
       data: user,
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       message: "Internal server error while trying to log in",
     });
@@ -57,12 +54,12 @@ export const googleSignIn = async (req = request, res = response) => {
   const { name, picture, email } = authUser;
 
   try {
-    let user = await findUserByEmail(email);
+    let user = await FindOne(User, { email });
 
     if (!user) {
       const password = passwordHash("google_no_need_password");
 
-      const userToSave = {
+      const dataToSave = {
         name,
         picture,
         email,
@@ -70,7 +67,7 @@ export const googleSignIn = async (req = request, res = response) => {
         google: true,
       };
 
-      user = await createUser(userToSave);
+      user = await Create(User, dataToSave);
     }
 
     if (!user.state)
@@ -87,7 +84,6 @@ export const googleSignIn = async (req = request, res = response) => {
       user,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       message: "ERROR: Google user could not be authenticated",
     });
