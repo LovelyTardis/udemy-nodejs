@@ -1,5 +1,11 @@
 import { response, request } from "express";
-import { Create, FindAll, FindById } from "../database/helpers/index.js";
+
+import {
+  Create,
+  Delete,
+  FindAll,
+  FindById,
+} from "../database/helpers/index.js";
 import { Product } from "../models/index.js";
 
 export const getProducts = async (req = request, res = response) => {
@@ -105,14 +111,14 @@ export const deleteProduct = async (req = request, res = response) => {
   const { id } = req.params;
 
   try {
-    await deleteCategoryDB(id);
+    await Delete(Product, id);
     res.json({
-      message: `Category with id ${id} deleted`,
+      message: `Product with id ${id} deleted`,
     });
   } catch (error) {
     res.status(500).json({
       error: `ERROR: ${error}`,
-      message: "Internal server error while deleting a category",
+      message: "Internal server error while deleting a product",
     });
   }
 };
