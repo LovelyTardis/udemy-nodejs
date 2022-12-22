@@ -5,6 +5,7 @@ import {
   Delete,
   FindAll,
   FindById,
+  Update,
 } from "../database/helpers/index.js";
 import { Product } from "../models/index.js";
 
@@ -66,7 +67,7 @@ export const getProduct = async (req = request, res = response) => {
 };
 
 export const createProduct = async (req = request, res = response) => {
-  const { name, category, ...rest } = req.body;
+  const { name, category, user, ...rest } = req.body;
 
   const dataToSave = {
     ...rest,
@@ -91,18 +92,27 @@ export const createProduct = async (req = request, res = response) => {
 
 export const updateProduct = async (req = request, res = response) => {
   const { id } = req.params;
-  const name = req.body.name.toUpperCase();
+  let { name, user, ...rest } = req.body;
+  name = name.toUpperCase();
+
+  const updatedData = { name, user: req.user._id, ...rest };
 
   try {
-    const updatedCategory = await findCategoryAndUpdate(id, { name });
+    const updatedProduct = await Update(Product, {
+      id,
+      updatedData,
+      populate: ["category", "name"],
+      populate2: ["user", "name"],
+    });
+
     res.json({
-      message: `Category name updated to ${updatedCategory.name}`,
-      updatedCategory,
+      message: `Product updated`,
+      updatedProduct,
     });
   } catch (error) {
     res.status(500).json({
       error: `ERROR: ${error}`,
-      message: "Internal server error while updating a category",
+      message: "Internal server error while updating a product",
     });
   }
 };
