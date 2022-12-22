@@ -14,9 +14,10 @@ import {
   validateJwt,
   validateRole,
   validateProductCreateBody,
-  // validateProductUpdateBody,
+  validateProductUpdateBody,
   existsInDatabase,
   validateProductIfNotExists,
+  validateProductCategory,
 } from "../middlewares/index.js";
 import { Product } from "../models/index.js";
 
@@ -32,8 +33,8 @@ const middlewares = {
   create: [
     validateJwt,
     validateProductIfNotExists,
+    validateProductCategory,
     validateProductCreateBody,
-    // validateCategoryInProduct,
     validateFields,
   ],
   update: [
@@ -42,8 +43,8 @@ const middlewares = {
     check("id", "Bad request - not a valid MongoDB id").isMongoId(),
     check("id").custom((id) => existsInDatabase(Product, id)),
     validateProductIfNotExists,
-    // validateCategoryInProduct,
-    // validateProductUpdateBody,
+    validateProductCategory,
+    validateProductUpdateBody,
     validateFields,
   ],
   delete: [
