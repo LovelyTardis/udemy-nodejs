@@ -1,6 +1,8 @@
 import { request, response } from "express";
+import { isValidObjectId } from "mongoose";
+
 import { FindById, FindOne } from "../database/helpers/findInDatabase.js";
-import { Product } from "../models/index.js";
+import { Category, Product } from "../models/index.js";
 
 export const validateProductIfNotExists = async (
   req = request,
@@ -13,6 +15,27 @@ export const validateProductIfNotExists = async (
   if (product)
     return res.status(400).json({
       message: `Bad request - product with name ${name} already exists.`,
+    });
+
+  next();
+};
+
+export const validateProductCategory = async (
+  req = request,
+  res = response,
+  next
+) => {
+  const categoryId = req.body.category;
+
+  if (!isValidObjectId(categoryId))
+    return res.status(400).json({
+      message: `Bad request - category id not valid.`,
+    });
+
+  const category = await FindById(Category, { id: categoryId });
+  if (!category)
+    return res.status(400).json({
+      message: `Bad request - category does not exists.`,
     });
 
   next();
@@ -47,17 +70,31 @@ export const validateProductCreateBody = async (
   next();
 };
 
-// export const validateProductUpdateBody = (
-//   req = request,
-//   res = response,
-//   next
-// ) => {
-//   const { name } = req.body;
+export const validateProductUpdateBody = (
+  req = request,
+  res = response,
+  next
+) => {
+  const { name, category, ...rest } = req.body;
+  const accepted = ["description", "stock", "price"];
+  const restKeys = Object.keys(rest);
 
-//   if (!name)
-//     return res.status(400).json({
-//       message: "Bad request - no name in body",
-//     });
+  if (!name)
+    return res.status(400).json({
+      message: "Bad request - no name in body",
+    });
 
-//   next();
-// };
+  let done = false;
+  restKeys.every((key) => {
+    if (!accepted.includes(key)) {
+      done = true;
+      return false;
+    }
+    return true;
+  });
+
+  if (done)
+    return res.status(400).json({ message: `Bad request - body not valid` });
+
+  next();
+};
