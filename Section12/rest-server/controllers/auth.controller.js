@@ -9,7 +9,7 @@ export const loginUser = async (req = request, res = response) => {
   const { email, password } = req.body;
 
   try {
-    const user = await FindOne(User, { email });
+    const user = await FindOne(User, { filter: email });
 
     if (!user) {
       return res.status(400).json({
@@ -54,7 +54,7 @@ export const googleSignIn = async (req = request, res = response) => {
   const { name, picture, email } = authUser;
 
   try {
-    let user = await FindOne(User, { email });
+    let user = await FindOne(User, { filter: email });
 
     if (!user) {
       const password = passwordHash("google_no_need_password");

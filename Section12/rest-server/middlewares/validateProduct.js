@@ -11,7 +11,7 @@ export const validateProductIfNotExists = async (
 ) => {
   const name = req.body.name.toUpperCase();
 
-  const product = await FindOne(Product, { name });
+  const product = await FindOne(Product, { filter: name });
   if (product)
     return res.status(400).json({
       message: `Bad request - product with name ${name} already exists.`,
