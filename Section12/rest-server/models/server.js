@@ -5,6 +5,7 @@ import {
   categoriesRoutes,
   productsRoutes,
   userRoutes,
+  searchRoutes,
 } from "../routes/index.js";
 import { dbConnection } from "../database/config.js";
 
@@ -18,6 +19,7 @@ export default class Server {
       categories: "/api/categories",
       users: "/api/users",
       products: "/api/products",
+      search: "/api/search",
     };
 
     // Connect to mongodb
@@ -62,5 +64,6 @@ export default class Server {
     this.app.use(this.routesPath.categories, categoriesRoutes);
     this.app.use(this.routesPath.users, userRoutes);
     this.app.use(this.routesPath.products, productsRoutes);
+    this.app.use(this.routesPath.search, searchRoutes);
   }
 }
